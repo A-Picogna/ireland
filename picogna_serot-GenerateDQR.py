@@ -23,24 +23,22 @@ mode2Percentage = []
 csvCategoryColumns = csv.select_dtypes(include=['object'])
 for col in csvCategoryColumns:
     tmp = csv[col].values.tolist().count(' ?')
-    tmp2 = round((tmp/len(csv[col].values.tolist()))*100)
-    if tmp == 0:
-        '''we remove 1 if there is a missing category'''
-        tmp2 = tmp2-1
-        if tmp2 < 0:
-            tmp2 = 0
+    tmp2 = round((tmp/len(csv[col].values.tolist()))*100,1)
     countList.append(tmp2)
-    cardList.append(len(csv[col].value_counts().tolist()))
+    if tmp != 0:
+        cardList.append(len(csv[col].value_counts().tolist())-1)
+    else:
+        cardList.append(len(csv[col].value_counts().tolist())-1)
     mode = csv[col].value_counts()
     indexList = mode.index.tolist()
     valueList = mode.values.tolist()
     modeP = csv[col].value_counts(normalize=True)
     mode1.append(indexList[0])
     mode1Count.append(valueList[0])
-    mode1Percentage.append(round(modeP.values.tolist()[0]*100))
+    mode1Percentage.append(round(modeP.values.tolist()[0]*100,1))
     mode2.append(indexList[1])
     mode2Count.append(valueList[1])
-    mode2Percentage.append(round(modeP.values.tolist()[1]*100))
+    mode2Percentage.append(round(modeP.values.tolist()[1]*100,1))
 
 categoricalFeatures = categoricalFeatures.transpose()
 categoricalFeatures.insert(1, "% Missing", countList)
