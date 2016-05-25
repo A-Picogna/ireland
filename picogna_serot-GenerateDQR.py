@@ -34,7 +34,7 @@ continuousFinal.insert(5, 'Mean', continuoustmp['mean'])
 continuousFinal['Std. Dev.'] = continuoustmp['std']
 continuousFinal.columns = columns
 
-continuousFinal.to_csv('./data/picogna_serot-DQR-ContinuousFeatures.csv')
+continuousFinal.to_csv('./data/DQR-ContinuousFeatures.csv')
 
 print(continuousFinal)
 
@@ -88,7 +88,7 @@ categoricalFeatures = categoricalFeatures.drop('unique', 1)
 categoricalFeatures = categoricalFeatures.drop('top', 1)
 categoricalFeatures = categoricalFeatures.drop('freq', 1)
 
-categoricalFeatures.to_csv("./data/picogna_serot-DQR-CategoricalFeatures.csv")
+categoricalFeatures.to_csv("./data/DQR-CategoricalFeatures.csv")
 
 print(categoricalFeatures)
 
