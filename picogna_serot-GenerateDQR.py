@@ -1,13 +1,48 @@
 '''Alexandre Picogna & Yasmine Serot'''
 
-import pandas
+import pandas as pd
 import time
 import plotly
 from plotly.graph_objs import Scatter, Layout
 import numpy as np
 print (plotly.__version__)
 
-csv = pandas.read_csv("./data/DataSet.csv", engine='python', header=0, index_col=0)
+"""
+Continuous features
+"""
+dataSet = pd.read_csv(r'./data/DataSet.csv')
+columns=['Count', '% Miss', 'Card.', 'Min.', '1st Qrt.', 'Mean', 
+         'Median', '3rd Qrt.', 'Max.', 'Std. Dev.']
+
+continuous = dataSet.select_dtypes(['float64','int64'])
+features = continuous.columns.values
+dataSetD = dataSet.describe()
+continuoustmp = dataSetD.transpose()
+
+card = []
+miss = []
+for i in features:
+    card.append(len(continuous[i].value_counts(0)))
+    miss.append(continuous[i].values.tolist().count(' ?'))
+
+continuousFinal = continuoustmp.copy()
+del continuousFinal['mean']
+del continuousFinal['std']
+continuousFinal.insert(1, '% Miss.', miss)
+continuousFinal.insert(2, 'Card.', card)
+continuousFinal.insert(5, 'Mean', continuoustmp['mean'])
+continuousFinal['Std. Dev.'] = continuoustmp['std']
+continuousFinal.columns = columns
+
+continuousFinal.to_csv('./data/picogna_serot-DQR-ContinuousFeatures.csv')
+
+print(continuousFinal)
+
+
+"""
+Categorical features
+"""
+csv = pd.read_csv("./data/DataSet.csv", engine='python', header=0, index_col=0)
 
 categoricalFeatures = csv.describe(include=["object"])
 
@@ -23,22 +58,22 @@ mode2Percentage = []
 csvCategoryColumns = csv.select_dtypes(include=['object'])
 for col in csvCategoryColumns:
     tmp = csv[col].values.tolist().count(' ?')
-    tmp2 = round((tmp/len(csv[col].values.tolist()))*100,1)
+    tmp2 = round((tmp/len(csv[col].values.tolist()))*100)
     countList.append(tmp2)
     if tmp != 0:
         cardList.append(len(csv[col].value_counts().tolist())-1)
     else:
-        cardList.append(len(csv[col].value_counts().tolist())-1)
+        cardList.append(len(csv[col].value_counts().tolist()))
     mode = csv[col].value_counts()
     indexList = mode.index.tolist()
     valueList = mode.values.tolist()
     modeP = csv[col].value_counts(normalize=True)
     mode1.append(indexList[0])
     mode1Count.append(valueList[0])
-    mode1Percentage.append(round(modeP.values.tolist()[0]*100,1))
+    mode1Percentage.append(round(modeP.values.tolist()[0]*100))
     mode2.append(indexList[1])
     mode2Count.append(valueList[1])
-    mode2Percentage.append(round(modeP.values.tolist()[1]*100,1))
+    mode2Percentage.append(round(modeP.values.tolist()[1]*100))
 
 categoricalFeatures = categoricalFeatures.transpose()
 categoricalFeatures.insert(1, "% Missing", countList)
@@ -60,6 +95,72 @@ print(categoricalFeatures)
 
 '''generation of plots'''
 '''
+
+plotly.offline.plot({
+"data": [
+    plotly.graph_objs.Histogram(
+        x=continuous['age']
+    )
+],
+"layout": plotly.graph_objs.Layout(
+    title="Age"
+)
+})
+
+plotly.offline.plot({
+"data": [
+    plotly.graph_objs.Histogram(
+        x=continuous['fnlwgt']
+    )
+],
+"layout": plotly.graph_objs.Layout(
+    title="Fnlwgt"
+)
+})
+
+plotly.offline.plot({
+"data": [
+    plotly.graph_objs.Histogram(
+        x=continuous['education-num']
+    )
+],
+"layout": plotly.graph_objs.Layout(
+    title="Education-num"
+)
+})
+
+plotly.offline.plot({
+"data": [
+    plotly.graph_objs.Histogram(
+        x=continuous['capital-gain']
+    )
+],
+"layout": plotly.graph_objs.Layout(
+    title="Capital-gain"
+)
+})
+
+plotly.offline.plot({
+"data": [
+    plotly.graph_objs.Histogram(
+        x=continuous['capital-loss']
+    )
+],
+"layout": plotly.graph_objs.Layout(
+    title="Capital-loss"
+)
+})
+
+plotly.offline.plot({
+"data": [
+    plotly.graph_objs.Histogram(
+        x=continuous['hours-per-week']
+    )
+],
+"layout": plotly.graph_objs.Layout(
+    title="Hours-per-week"
+)
+})
 
 for col in csvCategoryColumns:
     data = csv[col].value_counts()
@@ -86,5 +187,5 @@ for col in csvCategoryColumns:
             )
         })
     time.sleep(2)
-
+    
 '''
